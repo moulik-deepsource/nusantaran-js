@@ -1,5 +1,4 @@
 {
-  "semi": false,
   "overrides": [
     {
       "files": "*.test.js",
