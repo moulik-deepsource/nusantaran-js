@@ -1,33 +1,33 @@
 .font-14 {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .img-card {
-    object-fit: cover;
-    position: absolute;
+  object-fit: cover;
+  position: absolute;
 }
 
 .img-card-container {
-    position: relative;
-    overflow: hidden;
-    padding-bottom: 80%
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 80%;
 }
 
 @media only screen and (max-width: 425px) {
-    .card {
-        width: 35vw !important;
-        height: 100% !important;
-    }
+  .card {
+    width: 35vw !important;
+    height: 100% !important;
+  }
 
-    .card-price {
-        font-size: 14px;
-    }
-    
-    .card-button {
-        padding-top: 0;
-    }
+  .card-price {
+    font-size: 14px;
+  }
 
-    .card-detail {
-        padding-bottom: 0;
-    }
+  .card-button {
+    padding-top: 0;
+  }
+
+  .card-detail {
+    padding-bottom: 0;
+  }
 }
