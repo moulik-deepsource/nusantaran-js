@@ -1,17 +1,68 @@
 <%- include ('../includes/header.ejs') %>
+<link rel="stylesheet" href="/css/cart.css">
 
-<h1>Cart</h1>
-<% if (hasProduct){ %>
-    <ul>
-        <% for (let product of products){ %>
-            <!-- <li><%= product.name %> - <%= product.price %></li> -->
-            <li><%= product.name %> | Rp.<%= product.price %> x<%= product.qty %> = Rp.<%= product.price * product.qty %></li>
-        <% } %>
-    </ul>
-    <p>Total Price : Rp.<%= totalPrice %></p>
-    <button><a href="/checkout">Checkout</a></button>
-<% } else { %>
-    <p>Cart is empty</p>
-<% } %>
+<div class="container-fluid dimmed-bg pt-4 pb-5 main">
+    <div class="container">
+        <div class="row">
+            <div class="col" style="overflow: auto;">
+                <% if (hasProduct){ %>
+                    <div class="d-flex justify-content-between">
+                        <h5>Shopping Cart</h5>
+                        <h5><%= products.length %> Items</h5>
+                    </div>
+                <% } else { %>
+                    <h5>Shopping Cart</h5>
+                <% } %>
+                <% if (hasProduct){ %>
+                    <ul class="cart p-3 bg-white rounded shadow mt-2">
+                        <div class="row mb-2">
+                            <h6 class="col text-muted text-uppercase">Product</h6>
+                            <h6 class="col text-muted text-uppercase d-none d-md-block">Price</h6>
+                            <h6 class="col text-muted text-uppercase">Quantity</h6>
+                            <h6 class="col text-muted text-uppercase d-none d-md-block">Subtotal</h6>
+                            <h6 class="col text-muted text-uppercase"></h6>
+                        </div>
+                        <% for (let product of products){ %>
+                            <li class="mb-2">
+                                <div class="row">
+                                    <div class="col">
+                                        <img style="float: left;" class="d-none d-md-block mr-3" width="80" height="80" src="/<%= product.image %>">
+                                        <a href="/products/<%= product.id %>" class="ml-2"><%= product.name %></a>
+                                    </div>
+                                    <p class="col d-none d-md-block">Rp.<%= product.price %></p>
+                                    <div class="col">
+                                        <form class="cart-button" method="POST" action="/cart-update">
+                                            <input type="hidden" name="id" value="<%= product.id %>">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                            <input class="cart-qty" type="number" name="qty" min="1" value="<%= product.qty %>">
+                                            <button class="btn btn-primary" type="submit">Set QTY</button>
+                                        </form>
+                                    </div>
+                                    <p class="col d-none d-md-block">Rp.<%= product.price * product.qty %></p>
+                                    <form class="cart-button col" method="POST" action="/cart-delete">
+                                        <input type="hidden" name="id" value="<%= product.id %>">
+                                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                                        <button class="btn btn-danger" type="submit">Remove</button>
+                                    </form>
+                                </div>
+                            </li>
+                        <% } %>
+                    </ul>
+                    <h6 class="mt-4">TOTAL PRICE</h6>
+                    <p class="text-muted"><strong>Rp.<%= totalPrice %></strong></p>
+                    <div class="d-flex justify-content-between">
+                        <p><a class="btn btn-primary" href="/checkout">Checkout</a></p>
+                        <form action="/cart-truncate" method="post">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button class="btn btn-danger" type="submit">Empty Cart</button>
+                        </form>
+                    </div>
+                <% } else { %>
+                    <p>Cart is empty</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
 
 <%- include ('../includes/footer.ejs') %>

@@ -1,14 +1,47 @@
 <%- include ('../includes/header.ejs') %>
+<link rel="stylesheet" href="/css/product.css">
 
-<h1>Product Detail</h1>
-<p><strong><%= product.name %></strong></p>
-<p>Rp.<%= product.price %></p>
-<p><%= product.description %></p>
-<form method="POST" action="/cart">
-    <input type="hidden" name="productID" value="<%= product.id %>">
-    <input type="hidden" name="productPrice" value="<%= product.price %>">
-    <input type="hidden" name="path" value="<%= path %>">
-    <button type="submit">Add to Cart</button>
-</form>
+<div class="dimmed-bg pt-4 pb-5 main">
+    <div class="container">
+        <div class="row font-14">
+            <p><a href="/" class="text-muted">Home</a>-</p>
+            <p><a href="/products" class="text-muted">Products</a>-</p>
+            <p><strong><%= product.category %></strong></p>
+        </div>
+        <div class="row bg-white p-3 shadow rounded">
+            <div class="col d-none d-md-block">
+                <img class="img-fluid" src="/<%= product.image %>"></div>
+            <div class="col">
+                <img class="img-fluid d-block d-md-none mb-3" src="/<%= product.image %>">
+                <h6 class="text-primary text-uppercase"><%= product.category %></h6>
+                <h2><%= product.name %></h2>
+                <h5>Rp. <%= product.price %></h5>
+                <% if (isAuthenticated) { %>
+                    <div class="d-flex justify-content-start">
+                        <form method="POST" action="/add-wishlist">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <input type="hidden" name="productid" value="<%= product.id %>">
+                            <button type="submit" class="btn btn-outline-secondary">WISHLIST</button>
+                        </form>
+                        <div class="mr-2"></div>
+                        <form method="POST" action="/cart">
+                            <input type="hidden" name="productID" value="<%= product.id %>">
+                            <input type="hidden" name="productPrice" value="<%= product.price %>">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <div class="text-center">
+                                <button class="btn btn-primary" type="submit">ADD TO CART</button>
+                            </div>
+                        </form>
+                    </div>
+                <% } else { %>
+                    <p class="alert alert-danger text-center">You must have an account to buy our products</p>
+                <% } %>
+                <hr>
+                <h6 class="text-muted">PRODUCT DETAILS</h6>
+                <p><%= product.description %></p>
+            </div>
+        </div>
+    </div>
+</div>
 
 <%- include ('../includes/footer.ejs') %>

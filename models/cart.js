@@ -1,32 +1,61 @@
-const knex = require('knex');
-const db_config = require('./db-config').config;
-const db = knex(db_config);
-
+const knex = require('knex')
+const db_config = require('./db-config').config
+const db = knex(db_config)
 
 module.exports = class Cart {
-    static addProduct(productID, productPrice){
-        db('cart').returning('*').insert({
-            id:productID,
-            qty:1,
-            price:productPrice
-        }).catch(error=>{
-            if (error.code === '23505'){
-                db('cart').where('id',productID).select('qty').then(cartQty=>{
-                    db('cart').where('id',productID).update({
-                        'qty':cartQty[0].qty+1
-                    }).then(()=>{
-                        console.log('Product Qty updated')
-                    })
-                })
-            }
-        }).then(()=>{
-            console.log('Product added to cart')
-        });
+    static async addProduct(productID, owner, productPrice) {
+        const products = await db('cart').where({
+            'id': productID,
+            'owner': owner
+        })
+
+        if (products.length > 0) {
+            this.updateQty(productID, products[0].qty + 1, owner)
+        } else {
+            return db('cart').returning('*').insert({
+                id: productID,
+                qty: 1,
+                price: productPrice,
+                owner: owner
+            }).then((cart) => {
+                return cart
+            })
+        }
     }
 
-    static fetchAll(callBack){
-        db('cart').select('*').then(products=>{
-            callBack(products)
-        });
+    static async fetchAll() {
+        return await db('cart').select('*')
     }
-};
+
+    static async fetchByOwner(owner) {
+        return await db.select('*')
+            .from('products')
+            .where('cart.owner', owner)
+            .innerJoin('cart', 'products.id', 'cart.id')
+    }
+
+    static async emptyCart(owner) {
+        const products = await db('cart').where({
+            'owner': owner
+        }).del()
+        return products
+    }
+
+    static async deleteProduct(id, owner) {
+        const products = await db('cart').where({
+            'id': id,
+            'owner': owner
+        }).del()
+        return products
+    }
+
+    static async updateQty(id, qty, owner) {
+        await db('cart').where({
+            'id': id,
+            'owner': owner
+        }).update({
+            'qty': qty
+        })
+        return await db('cart').where('id', id)
+    }
+}

@@ -1,5 +1,66 @@
 <%- include ('../includes/header.ejs') %>
+<script src="https://js.stripe.com/v3/"></script>
 
-<h1>Checkout</h1>
+<div class="container-fluid dimmed-bg main">
+    <div class="container pt-4 pb-5">
+        <div class="row">
+            <div class="col" style="overflow: auto;">
+                <% if (paid) { %>
+                    <div class="alert alert-success">
+                        <h2>Payment Success</h2>
+                        <p>Thank you for ordering our product. Product will be shiped to your address. We will inform you when shipping is ready</p>
+                    </div>
+                <% } else { %>
+                    <h5 class="mb-3">Checkout</h5>
+                    <% if (hasProduct){ %>
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Name</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Subtotal Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% for (let product of products){ %>
+                                    <tr>
+                                        <td><%= product.id %></td>
+                                        <td><%= product.name %></td>
+                                        <td><%= product.qty %></td>
+                                        <td>Rp. <%= product.price %></td>
+                                        <td>Rp. <%= product.qty * product.price %></td>
+                                    </tr>
+                                <% } %>
+                                <tr>
+                                    <th colspan="4">Total Price</th>
+                                    <th>Rp. <%= totalPrice %></th>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <% if (isAdmin) { %>
+                            <% if (hasProduct) { %>
+                                <div>
+                                    <p class="alert alert-danger text-center">Cannot buy your own product</p>
+                                </div>
+                            <% } %>
+                        <% } else { %>
+                            <div>
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>" required>
+                                <input type="hidden" name="amount" value="<%= totalPrice %>" required>
+                                <input type="hidden" name="source" value="<%= source %>" required>
+                                <button class="btn btn-info" type="button" id="checkout-button">Checkout</button>
+                            </div>
+                        <% } %>
+                    <% } else { %>
+                        <p>There is no product in your cart</p>
+                    <% } %>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
 
+<script src="/js/checkout.js"></script>
 <%- include ('../includes/footer.ejs') %>
